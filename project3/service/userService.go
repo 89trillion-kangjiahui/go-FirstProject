@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -27,8 +26,10 @@ func CheckCodeService(uid, code string, userMap map[string]string) ([]entity.Gif
 	time2, timeEro2 := time.Parse("2006-01-02 15:04:05", ret.UsefulDate)
 
 	if timeEro1 == nil && timeEro2 == nil && time1.Before(time2) {
-		fmt.Println("成功了")
 		if ret.CodeType == "1" && ret.DrawId == uid {
+			if ret.ReceiveNum == "0" {
+				return nil, errors.New("该礼包已经被领取了")
+			}
 			//指定用户一次性消耗
 			ret.ReceiveNum = "0"
 			ret.AlreadyNum = "1"
@@ -45,7 +46,7 @@ func CheckCodeService(uid, code string, userMap map[string]string) ([]entity.Gif
 			oldReNum, _ := strconv.Atoi(ret.ReceiveNum)
 			//可领取次数为0
 			if oldReNum == 0 {
-				return nil, errors.New("可领取为0")
+				return nil, errors.New("该礼包已经没有了")
 			}
 			ret.ReceiveNum = strconv.Itoa(oldReNum - 1)
 			if ret.AlreadyNum == "" {
@@ -94,6 +95,5 @@ func giftSetRedis(code string, ret *entity.GiftContent) ([]entity.Gift, error) {
 	if redisEro2 != nil {
 		return nil, redisEro2
 	}
-	fmt.Println(ret.GiftList)
 	return ret.GiftList, nil
 }

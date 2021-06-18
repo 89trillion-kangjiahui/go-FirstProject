@@ -27,9 +27,6 @@ func CreateCodeService(uid, codeType, describe, receiveNum, usefulDate, jewel, g
 		UsefulDate: usefulDate,
 		CodeType:   codeType,
 	}
-	for i := 0; i < 5; i++ {
-
-	}
 	if codeType == "1" {
 		prize.DrawId = "2"
 	}
