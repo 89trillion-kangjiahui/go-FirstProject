@@ -1,134 +1,113 @@
-# 需求1：管理后台调用 - 创建礼品码
-### http请求方法：
-http  POST
-### 接口地址：
-localhost:8000/admin/create
-### 请求参数：
-参数名|参数类型|注释
------------- | ------------- | -------------
-uid|string|用户id
-codeType|string|礼包类型
-describe|string|礼包描述
-receiveNum|string|可领取次数
-usefulDate|string|有效期
-jewel|string|钻石数量
-gold|string|金子数量
-props|string|道具数量
-hero|string|英雄数量
-batman|string|小兵数量
-### 请求响应
-参数名|参数类型|注释
------------- | ------------- | -------------
-code|json|状态吗
-ret|json|礼包码
-
+# 需求1：app.ini配置文件解析
+### 通过第三方go包github.com/robfig/config读取.int配置文件，使用的函数如下：
 ```java
-{
-    code : 200,
-    ret : GPA8X6TP
-}
+	c, _ := config.ReadDefault("./config/app.ini").  //读取配置文件
+	httpPort, _ := c.String("server", "HttpPort")  //获取server标签下的HttpPort字段值
 ```
 
-# 需求2：管理后台调用 - 查询礼品码信息：
+# 需求2：读取命令行参数，获得json文件的路径：
+### 通过第三方go包github.com/spf13/pflag读取命令行参数json-path，使用的函数如下：
+```java
+var CliJsonPath = flag.StringP("json-path", "p", "./config/config.army.model.json", "Input Json Path")
+func GetJsonPath() string {
+	// 设置标准化参数名称的函数
+	flag.CommandLine.SetNormalizeFunc(wordSepNormalizeFunc)
+	flag.Parse()
+	return *CliJsonPath
+}
+```
+# 需求3：输入稀有度，当前解锁阶段，获取该稀有度合法且已解锁的所有士兵 
 ### http请求方法：
 http  GET
 ### 接口地址：
-localhost:8000/admin/select
+localhost:8000/soldier/getAll
 ### 请求参数：
 参数名|参数类型|注释
 ------------ | ------------- | -------------
-code｜string|礼品码
+rarity｜string|稀有度
+unlockArena｜string|解锁阶段
 ### 请求响应
 参数名|参数类型|注释
 ------------ | ------------- | -------------
-code|json|状态吗
-ret|json|礼品内容
+code|json|状态码
+returnData|json|所有士兵
 
-```java
-{
-    "gmtCreate":"2021-06-17 20:08:06",    //创建时间
-    "createUser":"管理员",                 //创建用户
-    "describe":"很牛逼",                   //礼品描述
-    "giftList":[                          //礼品内容列表
-        {
-            "name":"jewel",               //礼品名称
-            "num":"2"                     //礼品数量
-        },
-        {
-            "name":"gold",
-            "num":"4"
-        },
-        {
-            "name":"props",
-            "num":"65"
-        },
-        {
-            "name":"hero",
-            "num":"4"
-        },
-        {
-            "name":"batman",
-            "num":"0"
-        }
-    ],
-    "receiveNum":"7",                    //可领取次数
-    "usefulDate":"2021-06-26 15:04:05",  //有效期
-    "alreadyNum":"1",                    //已领取次数
-    "drawList":{                         //领取列表
-        "2021-06-17 20:09:31":"李四"
-    },
-    "drawId":"",                         //指定用户的Id
-    "codeType":"2"   //礼品码类型 1:指定用户一次性消耗，2：不指定用户限制兑换次数，3：不限用户，不限兑换次数
-}
-```
-
-# 需求3：客户端调用 - 验证礼品码：
-### http请求方法：
-http  GET
-### 接口地址：
-localhost:8000/user/check
-### 请求参数：
-参数名|参数类型|注释
------------- | ------------- | -------------
-uid|string|用户id
-code|string|礼品码
-### 请求响应
-参数名|参数类型|注释
------------- | ------------- | -------------
-code|json|状态吗
-ret|json|礼品信息
-
+### 返回json数据格式如下：
 ```java
 [
     {
-        "name":"jewel",           //礼品名字
-        "num":"2"                 //礼品数量
-    },
-    {
-        "name":"gold",
-        "num":"4"
-    },
-    {
-        "name":"props",
-        "num":"65"
-    },
-    {
-        "name":"hero",
-        "num":"4"
-    },
-    {
-        "name":"batman",
-        "num":"0"
+        "id":"10102",        //士兵id
+        "Name":"Swordsman",  //士兵名字
+        "UnlockArena":"0",   //解锁阶段
+        "Rarity":"1",        //稀有度
+        "Atk":"140"          //战斗力
     }
 ]
 ```
-###具体的执行流程
-1. 通过礼品码从redis获取礼品内容，如果报错，返回错误信息礼包码不正确，没有报错，就证明礼包码正确
-2. 将现在的领取时间和礼包内容里的有效期转为time类型比较是否超过期限，如果超过了，返回‘取时间超过限定日期’，没有则继续往下判断
-3. 判断礼包的类型字段‘CodeType’
-4. 如果为1，礼包类型为指定用户，限制可领取次数为1次的礼包， 判断是否被领取过，
-   如果没：将已领取次数变为0，领取列表，可领取次数修改后将新的礼包内容重新放回redis，并将其中的礼包信息返回。如果有：则直接返回‘该礼包已经被领取了‘
-5. 如果为2，礼包类型为不指定用户，可领取次数为固定的礼包，判断该礼包的是否可以继续领取，如果不能，则返回‘该礼包已经没有了’，如果能，
-   则将已领取次数减少，领取列表，可领取次数修改后将新的礼包内容重新放回redis，并将其中的礼包信息返回。
-6. 如果为3，礼包类型为不指定用户，可领取次数为无限的礼包，将已领取次数，领取列表，可领取次数修改后将新的礼包内容重新放回redis，并将其中的礼包信息返回。
 
+# 需求4：输入士兵id获取稀有度
+### http请求方法：
+http  GET
+### 接口地址：
+localhost:8000/soldier/getRarity 
+### 请求参数：
+参数名|参数类型|注释
+------------ | ------------- | -------------
+id｜string|士兵id
+### 请求响应
+参数名|参数类型|注释
+------------ | ------------- | -------------
+code|string|状态码
+ rarity|string|士兵稀有度
+
+### 返回数据格式如下：
+```java
+    "士兵的稀有度: 1"
+```
+
+
+# 需求5：输入士兵id获取战斗力
+### http请求方法：
+http  GET
+### 接口地址：
+localhost:8000/soldier/atc 
+### 请求参数：
+参数名|参数类型|注释
+------------ | ------------- | -------------
+id｜string|士兵id
+### 请求响应
+参数名|参数类型|注释
+------------ | ------------- | -------------
+code|string|状态码
+atc|string|士兵战斗力
+
+### 返回数据格式如下：
+```java
+    "士兵的战斗力: 1"
+```
+
+# 需求5：获取每个阶段解锁相应士兵的json数据
+### http请求方法：
+http  GET
+### 接口地址：
+localhost:8000/soldier/getAll/unlockArena
+### 请求参数：无
+### 请求响应
+参数名|参数类型|注释
+------------ | ------------- | -------------
+code|string|状态码
+ret|string|按阶段分类的所有士兵信息
+
+### 返回数据格式如下：
+```java
+    [
+        0:{
+           {
+               "id":"10102",        //士兵id
+               "Name":"Swordsman",  //士兵名字
+               "UnlockArena":"0",   //解锁阶段
+               "Rarity":"1",        //稀有度
+               "Atk":"140"          //战斗力
+            }
+     ]
+```
