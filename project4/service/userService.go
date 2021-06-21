@@ -3,13 +3,14 @@ package service
 import (
 	"encoding/json"
 	"errors"
-	"github.com/golang/protobuf/proto"
 	"time"
 
 	"project3/dao"
 	"project3/entity"
 	"project3/response"
 	"project3/util"
+
+	"github.com/golang/protobuf/proto"
 )
 
 func CheckCodeService(uid, code string) ([]byte, error) {
@@ -17,15 +18,15 @@ func CheckCodeService(uid, code string) ([]byte, error) {
 	drawTime := time.Now().Format("2006-01-02 15:04:05")
 	//判断用户是否注册
 	if daoEro != nil {
-		daoEroRes := setResponse(20100, "该用户未注册",nil, entity.Gift{}, entity.Gift{})
-		data,_ := proto.Marshal(daoEroRes)
+		daoEroRes := setResponse(20100, "该用户未注册", nil, entity.Gift{}, entity.Gift{})
+		data, _ := proto.Marshal(daoEroRes)
 		return data, daoEro
 	}
 	//判断礼包吗是否正确
 	value, redisEro := util.GetRedis(code)
 	if redisEro != nil {
 		redisRes := setResponse(30100, "该礼包码不正确", nil, user.GemBalance, user.GoldBalance)
-		data,_ := proto.Marshal(redisRes)
+		data, _ := proto.Marshal(redisRes)
 		return data, redisEro
 	}
 
@@ -54,7 +55,7 @@ func CheckCodeService(uid, code string) ([]byte, error) {
 			oldDrawList[drawTime] = user.UserName
 			ret.DrawList = oldDrawList
 			dao.UpdateBalance(uid, ret.GiftList)
-			userBalance,_ := dao.SelectByUid(uid)
+			userBalance, _ := dao.SelectByUid(uid)
 			return giftSetRedis(code, ret, *userBalance), nil
 		}
 		if ret.CodeType == "2" {
@@ -78,7 +79,7 @@ func CheckCodeService(uid, code string) ([]byte, error) {
 			oldDrawList[drawTime] = user.UserName
 			ret.DrawList = oldDrawList
 			dao.UpdateBalance(uid, ret.GiftList)
-			userBalance,_ := dao.SelectByUid(uid)
+			userBalance, _ := dao.SelectByUid(uid)
 			return giftSetRedis(code, ret, *userBalance), nil
 		}
 		if ret.CodeType == "3" {
@@ -92,15 +93,15 @@ func CheckCodeService(uid, code string) ([]byte, error) {
 			oldDrawList[drawTime] = user.UserName
 			ret.DrawList = oldDrawList
 			dao.UpdateBalance(uid, ret.GiftList)
-			userBalance,_ := dao.SelectByUid(uid)
+			userBalance, _ := dao.SelectByUid(uid)
 			return giftSetRedis(code, ret, *userBalance), nil
 		}
 		eroRes := setResponse(10102, "不是指定用户领取", nil, user.GemBalance, user.GoldBalance)
-		data,_ := proto.Marshal(eroRes)
+		data, _ := proto.Marshal(eroRes)
 		return data, errors.New("不是指定用户领取")
 	} else {
 		eroRes := setResponse(10103, "超过礼品码限定日期", nil, user.GemBalance, user.GoldBalance)
-		data,_ := proto.Marshal(eroRes)
+		data, _ := proto.Marshal(eroRes)
 		return data, errors.New("超过限定日期")
 	}
 }
@@ -123,28 +124,28 @@ func giftSetRedis(code string, ret entity.GiftContent, user entity.User) []byte 
 	return data
 }
 
-func UserLoginService(id string) (*entity.User) {
-	user,_ := dao.SelectByUid(id)
+func UserLoginService(id string) *entity.User {
+	user, _ := dao.SelectByUid(id)
 	return user
 }
 
-func UserRegisterService(userName string) (string,error){
+func UserRegisterService(userName string) (string, error) {
 	uid := util.UniqueId()
 	if userName == "" {
-		 return "", errors.New("用户名为空")
+		return "", errors.New("用户名为空")
 	}
 	user := entity.User{
-		Uid: uid,
+		Uid:      uid,
 		UserName: userName,
 		GemBalance: entity.Gift{
-			Gid: 1,
+			Gid:  1,
 			Name: "jewel",
-			Num: 0,
+			Num:  0,
 		},
 		GoldBalance: entity.Gift{
-			Gid: 2,
+			Gid:  2,
 			Name: "gold",
-			Num: 0,
+			Num:  0,
 		},
 	}
 	err := dao.InsertUser(&user)
@@ -157,7 +158,7 @@ func setResponse(code int32, msg string, giftList []entity.Gift, gemBalance, gol
 	balance[goldBalance.Gid] = gemBalance.Num
 	chance := make(map[uint32]uint64)
 	if giftList != nil {
-		for _, v := range giftList{
+		for _, v := range giftList {
 			if v.Gid == 1 {
 				chance[1] = v.Num
 			}
@@ -166,16 +167,16 @@ func setResponse(code int32, msg string, giftList []entity.Gift, gemBalance, gol
 			}
 		}
 		response := &response.GeneralReward{
-			Code: code,
-			Msg: msg,
+			Code:    code,
+			Msg:     msg,
 			Changes: chance,
 			Balance: balance,
 		}
 		return response
 	} else {
 		response := &response.GeneralReward{
-			Code: code,
-			Msg: msg,
+			Code:    code,
+			Msg:     msg,
 			Changes: nil,
 			Balance: balance,
 		}

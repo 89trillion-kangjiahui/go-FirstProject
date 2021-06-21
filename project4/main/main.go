@@ -10,8 +10,8 @@ const (
 	ACreateURL    = "/admin/create"
 	ASelectURL    = "/admin/select"
 	UCheckCodeURL = "/user/check"
-	UserLogin = "/user/login"
-	UserRegister = "/user/register"
+	UserLogin     = "/user/login"
+	UserRegister  = "/user/register"
 )
 
 func main() {
@@ -23,4 +23,3 @@ func main() {
 	controller.UserRegister(r, UserRegister)
 	r.Run(":8000")
 }
-

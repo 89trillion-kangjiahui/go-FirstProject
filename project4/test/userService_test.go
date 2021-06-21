@@ -2,8 +2,9 @@ package test
 
 import (
 	"fmt"
-	"project3/response"
 	"testing"
+
+	"project3/response"
 
 	"github.com/golang/protobuf/proto"
 )
@@ -18,19 +19,19 @@ func Test_protoDecode(t *testing.T) {
 	balance[1] = 3
 	balance[2] = 5
 	response1 := &response.GeneralReward{
-		Code: 1,
-		Msg: "加油",
+		Code:    1,
+		Msg:     "加油",
 		Changes: changes,
 		Balance: balance,
 	}
-	data,_ := proto.Marshal(response1)
+	data, _ := proto.Marshal(response1)
 
 	ret := response.GeneralReward{}
 	proto.Unmarshal(data, &ret)
 	if response1.Code == ret.Code && response1.Msg == ret.Msg {
 		fmt.Println(ret)
 		fmt.Println("proto编解码成功")
-	}else {
+	} else {
 		fmt.Println("proto编解码失败")
 	}
 }

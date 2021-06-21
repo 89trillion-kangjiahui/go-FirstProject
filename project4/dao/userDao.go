@@ -2,9 +2,11 @@ package dao
 
 import (
 	"context"
-	"go.mongodb.org/mongo-driver/bson"
+
 	"project3/entity"
 	"project3/util"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func SelectByUid(uid string) (*entity.User, error) {
@@ -15,7 +17,7 @@ func SelectByUid(uid string) (*entity.User, error) {
 	defer session.Disconnect(context.TODO())
 
 	result := entity.User{}
-	filter := bson.D{{"uid",uid}}
+	filter := bson.D{{"uid", uid}}
 	selectErr := collection.FindOne(context.TODO(), filter).Decode(&result)
 	if selectErr != nil {
 		return nil, selectErr
@@ -35,7 +37,7 @@ func InsertUser(user *entity.User) error {
 	return err
 }
 
-func UpdateBalance(uid string, giftList []entity.Gift) error  {
+func UpdateBalance(uid string, giftList []entity.Gift) error {
 	session, sessionEro, collection := util.GetSession()
 	if sessionEro != nil {
 		return sessionEro
@@ -48,7 +50,7 @@ func UpdateBalance(uid string, giftList []entity.Gift) error  {
 	}
 	var GemChance uint64
 	var GoldChance uint64
-	for _, v := range giftList{
+	for _, v := range giftList {
 		if v.Gid == 1 {
 			GemChance = v.Num
 		}
@@ -58,12 +60,11 @@ func UpdateBalance(uid string, giftList []entity.Gift) error  {
 	}
 	user.GemBalance.Num = user.GemBalance.Num + GemChance
 	user.GoldBalance.Num = user.GoldBalance.Num + GoldChance
-	filter := bson.D{{"uid",uid}}
+	filter := bson.D{{"uid", uid}}
 
 	update := bson.M{
 		"$set": user,
 	}
-	_, ero := collection.UpdateOne(context.Background(),filter,update)
+	_, ero := collection.UpdateOne(context.Background(), filter, update)
 	return ero
 }
-

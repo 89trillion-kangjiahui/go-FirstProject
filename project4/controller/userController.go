@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+
 	"project3/service"
 
 	"github.com/gin-gonic/gin"
@@ -22,13 +23,13 @@ func UserCheckCode(r *gin.Engine, url string) {
 	})
 }
 
-func UserLogin(r *gin.Engine, url string)  {
+func UserLogin(r *gin.Engine, url string) {
 	r.GET(url, func(c *gin.Context) {
 		uid := c.Query("uid")
 		user := service.UserLoginService(uid)
 		if user == nil {
 			//用户未注册,跳到用户注册页面注册
-			c.Redirect(http.StatusMovedPermanently,"http://localhost:8000/user/register")
+			c.Redirect(http.StatusMovedPermanently, "http://localhost:8000/user/register")
 		}
 		if user != nil {
 			c.JSON(http.StatusOK, *user)
@@ -36,7 +37,7 @@ func UserLogin(r *gin.Engine, url string)  {
 	})
 }
 
-func UserRegister(r *gin.Engine, url string)  {
+func UserRegister(r *gin.Engine, url string) {
 	r.GET(url, func(c *gin.Context) {
 		username := c.Query("username")
 		uid, ero := service.UserRegisterService(username)
