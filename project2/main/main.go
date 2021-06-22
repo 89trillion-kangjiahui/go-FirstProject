@@ -1,13 +1,15 @@
 package main
 
 import (
+	"project2/controller"
+
 	"github.com/gin-gonic/gin"
-	 . "project2/controller"
 )
 
-func main()  {
+const url = "/cal/getRet"
+
+func main() {
 	r := gin.Default()
-	ComputeRet(r)
+	controller.ComputeRet(r, url)
 	r.Run(":8000")
 }
-

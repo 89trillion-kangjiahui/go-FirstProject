@@ -1,20 +1,21 @@
 package util
 
 import (
-	. "project2/stack"
 	"strconv"
 	"unicode"
+
+	. "project2/stack"
 )
 
 func GetResult(postfix []string) int {
 	var curStack Stack
 	for _, v := range postfix {
 		curChar := v
-		if i, ero := strconv.Atoi(v);ero == nil {
+		if i, ero := strconv.Atoi(v); ero == nil {
 			curStack.Push(strconv.Itoa(i))
 		} else {
-			v1,_ :=curStack.Pop()
-			v2,_ := curStack.Pop()
+			v1, _ := curStack.Pop()
+			v2, _ := curStack.Pop()
 			num1, _ := strconv.Atoi(v1)
 			num2, _ := strconv.Atoi(v2)
 			switch curChar {
@@ -47,8 +48,8 @@ func MixToPost(exp string) []string {
 			curStack.Push("(")
 		case ")":
 			for !curStack.IsEmpty() {
-				top,_ := curStack.Top()
-				if top == "("  {
+				top, _ := curStack.Top()
+				if top == "(" {
 					curStack.Pop()
 					break
 				}
@@ -65,8 +66,8 @@ func MixToPost(exp string) []string {
 			i = j - 1
 		default:
 			for !curStack.IsEmpty() {
-				top,_ := curStack.Top()
-				if top == "(" || isMore(top, char){
+				top, _ := curStack.Top()
+				if top == "(" || isMore(top, char) {
 					break
 				}
 				prefix = append(prefix, top)
@@ -76,7 +77,7 @@ func MixToPost(exp string) []string {
 		}
 	}
 	for !curStack.IsEmpty() {
-		data,_ := curStack.Pop()
+		data, _ := curStack.Pop()
 		prefix = append(prefix, data)
 	}
 	return prefix

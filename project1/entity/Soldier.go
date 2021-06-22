@@ -39,4 +39,3 @@ type Soldier struct {
 	CombatPoints             string `json:"CombatPoints"`
 	KillGold                 string `json:"KillGold"`
 }
-

@@ -1,13 +1,15 @@
 package dto
 
-type CalRet struct {
-	Expression string `json:"expression"`
-	Result int `json:"result"`
+type Result struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+	Data int    `json:"data"`
 }
 
-func GetCalRet(exp string, newRet int) *CalRet {
-	return &CalRet{
-		Expression: exp,
-		Result: newRet,
+func SetResult(code, data int, msg string) Result {
+	return Result{
+		Code: code,
+		Msg:  msg,
+		Data: data,
 	}
 }
