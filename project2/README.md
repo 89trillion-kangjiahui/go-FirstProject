@@ -20,6 +20,8 @@
 ├── README.md             //技术文档
 ├── controller            
 │   └── getResult.go      //接收http请求并返回响应
+├── doc
+│   └── img.png           //存储.md中引用的图片
 ├── dto
 │   └── calRet.go         //返回数据的格式
 ├── go.mod
