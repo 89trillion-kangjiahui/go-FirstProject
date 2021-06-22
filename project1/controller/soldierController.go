@@ -2,6 +2,7 @@ package controller
 
 import (
 	. "project1/entity"
+	"project1/service"
 
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -11,14 +12,14 @@ func GetAllByRarity(r *gin.Engine, url string, soldierMap map[string]SoldierDTO)
 	r.GET(url, func(c *gin.Context) {
 		rarity := c.Query("rarity")
 		unlockArena := c.Query("unlockArena")
-		returnData := make([]SoldierDTO, 0)
-		for _, v := range soldierMap {
-			if v.Rarity == rarity && v.UnlockArena == unlockArena {
-				returnData = append(returnData, v)
-			}
+		returnData := service.GetAllByRarityService(rarity, unlockArena, soldierMap)
+		if returnData == nil {
+			ret := SetResult(4001, "没有相关内容", nil)
+			c.JSON(http.StatusOK, ret)
+		} else {
+			ret := SetResult(200, "找到符合信息的士兵", returnData)
+			c.JSON(http.StatusOK, ret)
 		}
-
-		c.JSON(http.StatusOK, returnData)
 	})
 }
 
@@ -26,14 +27,14 @@ func GetAckById(r *gin.Engine, url string, soldierMap map[string]SoldierDTO) {
 	// gin.Context，封装了request和response
 	r.GET(url, func(c *gin.Context) {
 		id := c.Query("id")
-		var atc string
-		for _, v := range soldierMap {
-			if v.Id == id {
-				atc = v.Atk
-				break
-			}
+		atc := service.GetAckByIdService(id, soldierMap)
+		if atc == "" {
+			ret := SetResult(4001, "没有相关内容", nil)
+			c.JSON(http.StatusOK, ret)
+		} else {
+			ret := SetResult(200, "找到了该士兵的战斗力", atc)
+			c.JSON(http.StatusOK, ret)
 		}
-		c.String(http.StatusOK, "士兵的战斗力:"+atc)
 	})
 }
 
@@ -41,27 +42,26 @@ func GetRarityById(r *gin.Engine, url string, soldierMap map[string]SoldierDTO) 
 	// gin.Context，封装了request和response
 	r.GET(url, func(c *gin.Context) {
 		id := c.Query("id")
-		var rarity string
-		for _, v := range soldierMap {
-			if v.Id == id {
-				rarity = v.Rarity
-				break
-			}
+		rarity := service.GetRarityById(id, soldierMap)
+		if rarity == "" {
+			ret := SetResult(4001, "没有相关内容", nil)
+			c.JSON(http.StatusOK, ret)
+		} else {
+			ret := SetResult(200, "找到了该士兵的稀有度", rarity)
+			c.JSON(http.StatusOK, ret)
 		}
-		c.String(http.StatusOK, "士兵的稀有度:"+rarity)
 	})
 }
 
 func GetSoldierByUnlockArena(r *gin.Engine, url string, soldierMap map[string]SoldierDTO) {
 	r.GET(url, func(c *gin.Context) {
-		ret := make(map[string][]SoldierDTO)
-		for _, v := range soldierMap {
-			unlockArena := v.UnlockArena
-			if i := ret[unlockArena]; i == nil {
-				i = make([]SoldierDTO, 0)
-			}
-			ret[unlockArena] = append(ret[unlockArena], v)
+		retData := service.GetSoldierByUnlockArena(soldierMap)
+		if retData == nil {
+			ret := SetResult(4001, "没有相关内容", nil)
+			c.JSON(http.StatusOK, ret)
+		} else {
+			ret := SetResult(200, "找到符合信息的士兵", retData)
+			c.JSON(http.StatusOK, ret)
 		}
-		c.JSON(http.StatusOK, ret)
 	})
 }
