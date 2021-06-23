@@ -8,7 +8,7 @@ import (
 	"project3/util"
 )
 
-func CreateCodeService(uid, codeType, describe, receiveNum, usefulDate, jewel, gold, props, hero, batman string, userMap map[string]string) (string, error) {
+func CreateCodeService(uid, codeType, describe, receiveNum, usefulDate, jewel, gold, props, hero, batman string, userMap map[string]string) (int, string, string) {
 	username := userMap[uid]
 	createTime := time.Now().Format("2006-01-02 15:04:05")
 	key := util.RandSeq(8)
@@ -32,22 +32,22 @@ func CreateCodeService(uid, codeType, describe, receiveNum, usefulDate, jewel, g
 	}
 	value, jsonEro := json.Marshal(prize)
 	if jsonEro != nil {
-		return "", jsonEro
+		return 40001, "", "json序列化错误"
 	}
 	redisEro := util.SetRedis(key, value)
 	if redisEro != nil {
-		return "", redisEro
+		return 50001, "", "redis服务有问题"
 	}
-	return key, nil
+	return 200, key, "请求成功"
 }
 
-func SelectCodeService(code string) (GiftContent, error) {
+func SelectCodeService(code string) (int, GiftContent, string) {
 	value, jsonEro := util.GetRedis(code)
 	if jsonEro != nil {
-		return GiftContent{}, jsonEro
+		return 40001, GiftContent{}, "json序列化错误"
 	}
 	jsonString := []byte(value)
 	var ret GiftContent
 	json.Unmarshal(jsonString, &ret)
-	return ret, nil
+	return 200, ret, "请求成功"
 }

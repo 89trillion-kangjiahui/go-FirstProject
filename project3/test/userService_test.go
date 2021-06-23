@@ -22,18 +22,18 @@ func Test_CheckCodeService(t *testing.T) {
 		uid     string
 		code    string
 		userMap map[string]string
-		ero     error
+		ero     int
 	}{
-		{"2","APi6eK30",usermap, nil},
-		{"6","b2rWopwr",usermap, nil},
-		{"2","Lhr31KWk",usermap, nil},
-		{"4","QMvFVKAI",usermap, nil},
-		{"5","It7dRPnm",usermap, nil},
-		{"7","sUy1FSTu",usermap, nil},
-		{"8","tzg1f1nd",usermap, nil},
+		{"2", "APi6eK30", usermap, 200},
+		{"6", "b2rWopwr", usermap, 200},
+		{"2", "Lhr31KWk", usermap, 200},
+		{"4", "QMvFVKAI", usermap, 200},
+		{"5", "It7dRPnm", usermap, 200},
+		{"7", "sUy1FSTu", usermap, 200},
+		{"8", "tzg1f1nd", usermap, 200},
 	} {
 		// 调用排列组合函数，与期望的结果比对，如果不一致输出错误
-		if _, actually := service.CheckCodeService(v.uid,v.code,v.userMap); actually != v.ero {
+		if actually, _, _ := service.CheckCodeService(v.uid, v.code, v.userMap); actually != v.ero {
 			t.Errorf("combination: [%v], actually: [%v]", v, actually)
 		}
 	}

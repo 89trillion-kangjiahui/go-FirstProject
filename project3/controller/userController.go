@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"project3/entity"
 	"project3/service"
 
 	"github.com/gin-gonic/gin"
@@ -11,10 +12,8 @@ func UserCheckCode(r *gin.Engine, url string, userMap map[string]string) {
 	r.GET(url, func(c *gin.Context) {
 		uid := c.Query("uid")
 		code := c.Query("code")
-		ret, serviceEro := service.CheckCodeService(uid, code, userMap)
-		if serviceEro != nil {
-			c.JSON(http.StatusInternalServerError, serviceEro.Error())
-		}
+		retCode, data, serviceEro := service.CheckCodeService(uid, code, userMap)
+		ret := entity.SetResult(retCode, serviceEro, data)
 		c.JSON(http.StatusOK, ret)
 	})
 }

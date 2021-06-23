@@ -1,8 +1,7 @@
 package controller
 
 import (
-	"fmt"
-
+	"project3/entity"
 	"project3/service"
 
 	"github.com/gin-gonic/gin"
@@ -21,23 +20,17 @@ func AdminCreateCode(r *gin.Engine, url string, userMap map[string]string) {
 		props := c.PostForm("props")           //道具数量
 		hero := c.PostForm("hero")             //英雄数量
 		batman := c.PostForm("batman")         //小兵数量
-		code, serviceEro := service.CreateCodeService(uid, codeType, describe, receiveNum, usefulDate, jewel, gold, props, hero, batman, userMap)
-		if serviceEro != nil {
-			fmt.Println(serviceEro)
-			c.JSON(http.StatusInternalServerError, serviceEro.Error())
-		}
-		c.JSON(http.StatusOK, code)
+		retCode, data, serviceEro := service.CreateCodeService(uid, codeType, describe, receiveNum, usefulDate, jewel, gold, props, hero, batman, userMap)
+		ret := entity.SetResult(retCode, serviceEro, data)
+		c.JSON(http.StatusOK, ret)
 	})
 }
 
 func AdminSelectCode(r *gin.Engine, url string) {
 	r.GET(url, func(c *gin.Context) {
 		code := c.Query("code")
-		ret, serviceEro := service.SelectCodeService(code)
-		if serviceEro != nil {
-			fmt.Println(serviceEro)
-			c.JSON(http.StatusInternalServerError, serviceEro.Error())
-		}
+		retCode, data, serviceEro := service.SelectCodeService(code)
+		ret := entity.SetResult(retCode, serviceEro, data)
 		c.JSON(http.StatusOK, ret)
 	})
 }
