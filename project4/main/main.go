@@ -6,27 +6,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var UserMap = make(map[string]string)
-
 const (
 	ACreateURL    = "/admin/create"
 	ASelectURL    = "/admin/select"
 	UCheckCodeURL = "/user/check"
+	UserLogin     = "/user/login"
+	UserRegister  = "/user/register"
 )
 
 func main() {
-	createUserMap()
 	r := gin.Default()
-	controller.AdminCreateCode(r, ACreateURL, UserMap)
+	controller.AdminCreateCode(r, ACreateURL)
 	controller.AdminSelectCode(r, ASelectURL)
-	controller.UserCheckCode(r, UCheckCodeURL, UserMap)
+	controller.UserCheckCode(r, UCheckCodeURL)
+	controller.UserLogin(r, UserLogin)
+	controller.UserRegister(r, UserRegister)
 	r.Run(":8000")
-}
-
-func createUserMap() {
-	UserMap["1"] = "管理员"
-	UserMap["2"] = "张三"
-	UserMap["3"] = "李四"
-	UserMap["4"] = "王五"
-	UserMap["5"] = "赵六"
 }

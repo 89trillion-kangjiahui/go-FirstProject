@@ -1,6 +1,7 @@
 package entity
 
 type Gift struct {
+	Gid  uint32 `json:"gid"`
 	Name string `json:"name"`
-	Num  string `json:"num"`
+	Num  uint64 `json:"num"`
 }

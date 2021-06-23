@@ -6,13 +6,13 @@ class QuickstartUser(HttpUser):
 
     @task
     def hello_world(self):
-        self.client.get("/admin/select?code=L4W5NGCd")
-        self.client.get("/user/check?uid=3&code=L4W5NGCd")
-        
+        self.client.get("/admin/select?code=xJu8uro9")
+        self.client.get("/user/check?uid=99b4a72f645b49ef72f49b414e62f2c4&code=xJu8uro9")
+        self.client.get("/user/register?username=赵阳")
+        self.client.get("/user/login?uid=99b4a72f645b49ef72f49b414e62f2c4")
     def on_start(self):
         header = { "Content-Type":"application/x-www-form-urlencoded"}
         payload={
-            "uid":"1",
             "codeType":"2",
             "des": "牛逼",
             "receiveNum":"1000",

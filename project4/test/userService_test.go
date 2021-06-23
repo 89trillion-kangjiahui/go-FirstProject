@@ -1,40 +1,37 @@
 package test
 
 import (
+	"fmt"
 	"testing"
 
-	"project3/service"
+	"project3/response"
+
+	"github.com/golang/protobuf/proto"
 )
 
-func Test_CheckCodeService(t *testing.T) {
-	var usermap = make(map[string]string)
-	usermap["1"] = "管理员"
-	usermap["2"] = "张三"
-	usermap["3"] = "李四"
-	usermap["4"] = "王五"
-	usermap["5"] = "赵六"
-	usermap["6"] = "赵七"
-	usermap["7"] = "赵八"
-	usermap["8"] = "赵九"
-
+//测试proto编解码是否正确
+func Test_protoDecode(t *testing.T) {
 	// 这里定义一个临时的结构体来存储测试case的参数以及期望的返回值
-	for _, v := range []struct {
-		uid     string
-		code    string
-		userMap map[string]string
-		ero     int
-	}{
-		{"2", "APi6eK30", usermap, 200},
-		{"6", "b2rWopwr", usermap, 200},
-		{"2", "Lhr31KWk", usermap, 200},
-		{"4", "QMvFVKAI", usermap, 200},
-		{"5", "It7dRPnm", usermap, 200},
-		{"7", "sUy1FSTu", usermap, 200},
-		{"8", "tzg1f1nd", usermap, 200},
-	} {
-		// 调用排列组合函数，与期望的结果比对，如果不一致输出错误
-		if actually, _, _ := service.CheckCodeService(v.uid, v.code, v.userMap); actually != v.ero {
-			t.Errorf("combination: [%v], actually: [%v]", v, actually)
-		}
+	changes := make(map[uint32]uint64)
+	balance := make(map[uint32]uint64)
+	changes[1] = 3
+	changes[2] = 5
+	balance[1] = 3
+	balance[2] = 5
+	response1 := &response.GeneralReward{
+		Code:    1,
+		Msg:     "加油",
+		Changes: changes,
+		Balance: balance,
+	}
+	data, _ := proto.Marshal(response1)
+
+	ret := response.GeneralReward{}
+	proto.Unmarshal(data, &ret)
+	if response1.Code == ret.Code && response1.Msg == ret.Msg {
+		fmt.Println(ret)
+		fmt.Println("proto编解码成功")
+	} else {
+		fmt.Println("proto编解码失败")
 	}
 }
