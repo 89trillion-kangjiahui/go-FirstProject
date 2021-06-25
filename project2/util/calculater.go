@@ -14,8 +14,8 @@ func GetResult(postfix []string) int {
 		if i, ero := strconv.Atoi(v); ero == nil {
 			curStack.Push(strconv.Itoa(i))
 		} else {
-			v1, _ := curStack.Pop()
-			v2, _ := curStack.Pop()
+			v1 := curStack.Pop()
+			v2 := curStack.Pop()
 			num1, _ := strconv.Atoi(v1)
 			num2, _ := strconv.Atoi(v2)
 			switch curChar {
@@ -30,7 +30,7 @@ func GetResult(postfix []string) int {
 			}
 		}
 	}
-	ret, _ := curStack.Top()
+	ret := curStack.Top()
 	result, _ := strconv.Atoi(ret)
 	return result
 }
@@ -44,18 +44,6 @@ func MixToPost(exp string) []string {
 		switch char {
 		case " ":
 			continue
-		case "(":
-			curStack.Push("(")
-		case ")":
-			for !curStack.IsEmpty() {
-				top, _ := curStack.Top()
-				if top == "(" {
-					curStack.Pop()
-					break
-				}
-				prefix = append(prefix, top)
-				curStack.Pop()
-			}
 		case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
 			j := i
 			digit := ""
@@ -66,8 +54,8 @@ func MixToPost(exp string) []string {
 			i = j - 1
 		default:
 			for !curStack.IsEmpty() {
-				top, _ := curStack.Top()
-				if top == "(" || isMore(top, char) {
+				top := curStack.Top()
+				if isMore(top, char) {
 					break
 				}
 				prefix = append(prefix, top)
@@ -77,7 +65,7 @@ func MixToPost(exp string) []string {
 		}
 	}
 	for !curStack.IsEmpty() {
-		data, _ := curStack.Pop()
+		data := curStack.Pop()
 		prefix = append(prefix, data)
 	}
 	return prefix
@@ -89,8 +77,6 @@ func isMore(top, char string) bool {
 		if char == "*" || char == "/" {
 			return true
 		}
-	case "(":
-		return true
 	}
 	return false
 }
