@@ -2,17 +2,21 @@ package util
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 
 	. "project1/entity"
 )
 
-func JsonToFile(jsonPath string, target map[string]Soldier) map[string]SoldierDTO {
-	data, _ := ioutil.ReadFile(jsonPath)
+func JsonToFile(jsonPath string) map[string]SoldierDTO {
+	var target = make(map[string]Soldier)
+	data, err := ioutil.ReadFile(jsonPath)
+	if err != nil {
+		fmt.Println(err)
+	}
 	json.Unmarshal(data, &target)
 	ret := make(map[string]SoldierDTO)
-
 	for k, v := range target {
 		ret[k] = SoldierDTO{
 			Id:          v.Id,
@@ -20,6 +24,7 @@ func JsonToFile(jsonPath string, target map[string]Soldier) map[string]SoldierDT
 			UnlockArena: v.UnlockArena,
 			Rarity:      v.Rarity,
 			Atk:         v.Atk,
+			Cvc:         v.Cvc,
 		}
 	}
 	data, _ = json.Marshal(ret)
@@ -28,7 +33,7 @@ func JsonToFile(jsonPath string, target map[string]Soldier) map[string]SoldierDT
 }
 
 func WriteJsonFile(data []byte) {
-	fp, _ := os.OpenFile("config/new.soldier.dto.json", os.O_RDWR|os.O_CREATE, 0755)
+	fp, _ := os.OpenFile("../config/new.soldier.dto.json", os.O_RDWR|os.O_CREATE, 0755)
 	defer fp.Close()
 	fp.Write(data)
 }

@@ -8,60 +8,69 @@ import (
 	"project1/service"
 )
 
-func GetAllByRarity(r *gin.Engine, url string, soldierMap map[string]SoldierDTO) {
-	r.GET(url, func(c *gin.Context) {
-		rarity := c.Query("rarity")
-		unlockArena := c.Query("unlockArena")
-		returnData := service.GetAllByRarityService(rarity, unlockArena, soldierMap)
-		if returnData == nil {
-			ret := SetResult(4001, "没有相关内容", nil)
-			c.JSON(http.StatusOK, ret)
-		} else {
-			ret := SetResult(200, "找到符合信息的士兵", returnData)
-			c.JSON(http.StatusOK, ret)
-		}
-	})
+//需求1：输入稀有度，当前解锁阶段和cvc，获取该稀有度cvc合法且已解锁的所有士兵
+func GetAllByRarity(c *gin.Context) {
+	rarity := c.Query("rarity")
+	unlockArena := c.Query("unlockArena")
+	cvc := c.Query("cvc")
+	if rarity == "" {
+		ret := SetResult(3000, "rarity不能为空", nil)
+		c.JSON(http.StatusOK, ret)
+	} else if unlockArena == "" {
+		ret := SetResult(3001, "unlockArena不能为空", nil)
+		c.JSON(http.StatusOK, ret)
+	} else if cvc == "" {
+		ret := SetResult(3002, "cvc不能为空", nil)
+		c.JSON(http.StatusOK, ret)
+	} else {
+		code, msg, data := service.GetAllByRarity(rarity, unlockArena, cvc)
+		ret := SetResult(code, msg, data)
+		c.JSON(http.StatusOK, ret)
+	}
 }
 
-func GetAckById(r *gin.Engine, url string, soldierMap map[string]SoldierDTO) {
-	// gin.Context，封装了request和response
-	r.GET(url, func(c *gin.Context) {
-		id := c.Query("id")
-		atc := service.GetAckByIdService(id, soldierMap)
-		if atc == "" {
-			ret := SetResult(4001, "没有相关内容", nil)
-			c.JSON(http.StatusOK, ret)
-		} else {
-			ret := SetResult(200, "找到了该士兵的战斗力", atc)
-			c.JSON(http.StatusOK, ret)
-		}
-	})
+//输入士兵id获取战力
+func GetAckById(c *gin.Context) {
+	id := c.Query("id")
+	if id == "" {
+		ret := SetResult(3003, "id不能为空", nil)
+		c.JSON(http.StatusOK, ret)
+	} else {
+		code, msg, data := service.GetAckById(id)
+		ret := SetResult(code, msg, data)
+		c.JSON(http.StatusOK, ret)
+	}
 }
 
-func GetRarityById(r *gin.Engine, url string, soldierMap map[string]SoldierDTO) {
-	// gin.Context，封装了request和response
-	r.GET(url, func(c *gin.Context) {
-		id := c.Query("id")
-		rarity := service.GetRarityById(id, soldierMap)
-		if rarity == "" {
-			ret := SetResult(4001, "没有相关内容", nil)
-			c.JSON(http.StatusOK, ret)
-		} else {
-			ret := SetResult(200, "找到了该士兵的稀有度", rarity)
-			c.JSON(http.StatusOK, ret)
-		}
-	})
+//输入士兵id获取稀有度
+func GetRarityById(c *gin.Context) {
+	id := c.Query("id")
+	if id == "" {
+		ret := SetResult(3003, "id不能为空", nil)
+		c.JSON(http.StatusOK, ret)
+	} else {
+		code, msg, data := service.GetRarityById(id)
+		ret := SetResult(code, msg, data)
+		c.JSON(http.StatusOK, ret)
+	}
 }
 
-func GetSoldierByUnlockArena(r *gin.Engine, url string, soldierMap map[string]SoldierDTO) {
-	r.GET(url, func(c *gin.Context) {
-		retData := service.GetSoldierByUnlockArena(soldierMap)
-		if retData == nil {
-			ret := SetResult(4001, "没有相关内容", nil)
-			c.JSON(http.StatusOK, ret)
-		} else {
-			ret := SetResult(200, "找到符合信息的士兵", retData)
-			c.JSON(http.StatusOK, ret)
-		}
-	})
+//输入cvc获取所有合法的士兵
+func GetSoldierByCvc(c *gin.Context) {
+	cvc := c.Query("cvc")
+	if cvc == "" {
+		ret := SetResult(3002, "cvc不能为空", nil)
+		c.JSON(http.StatusOK, ret)
+	} else {
+		code, msg, data := service.GetSoldierByCvc(cvc)
+		ret := SetResult(code, msg, data)
+		c.JSON(http.StatusOK, ret)
+	}
+}
+
+//获取每个阶段解锁相应士兵的json数据
+func GetSoldierByUnlockArena(c *gin.Context) {
+	code, msg, data := service.GetSoldierByUnlockArena()
+	ret := SetResult(code, msg, data)
+	c.JSON(http.StatusOK, ret)
 }

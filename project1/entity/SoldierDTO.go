@@ -6,4 +6,5 @@ type SoldierDTO struct {
 	UnlockArena string `json:"UnlockArena"`
 	Rarity      string `json:"Rarity"`
 	Atk         string `json:"Atk"`
+	Cvc         string `json:"Cvc"`
 }

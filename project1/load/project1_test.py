@@ -6,7 +6,8 @@ class QuickstartUser(HttpUser):
 
     @task
     def hello_world(self):
-        self.client.get("/soldier/getAll?rarity=1&unlockArena=0")
+        self.client.get("/soldier/getAll?rarity=1&unlockArena=0&cvc=1000")
         self.client.get("/soldier/getRarity?id=10101")
-        self.client.get("/soldier/atc?id=10101")
-        self.client.get("/soldier/getAll/unlockArena")
+        self.client.get("/soldier/getAtk?id=10101")
+        self.client.get("/soldier/getByCvc?cvc=1000")
+        self.client.get("/soldier/getByUnlockArena")
