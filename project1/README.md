@@ -36,12 +36,15 @@
 │   ├── Soldier.go               //老json文件的士兵
 │   └── SoldierDTO.go            //新json文件的士兵
 ├── go.mod
-├── go.sum
 ├── load
 │   ├── project1_test.py         //压力测试代码
 │   └── report1.html             //压力测试报告
 ├── main
 │   └── main.go                  //项目启动
+├── global
+│   └── globalVar.go             //全局变量
+├── route
+│   └── route.go                 //路由管理
 ├── service
 │   └── soldierService.go        //处理获取士兵信息的逻辑
 ├── test
