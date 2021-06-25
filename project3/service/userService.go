@@ -16,7 +16,7 @@ func CheckCodeService(uid, code string, userMap map[string]string) (int, []entit
 	_, ok := userMap[uid]
 	if ok {
 		username = userMap[uid]
-	}else {
+	} else {
 		return 30000, nil, "不存在该用户"
 	}
 	//获取领取时间

@@ -1,8 +1,9 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 
 	"project3/entity"
 	"project3/global"
@@ -32,7 +33,7 @@ func AdminSelectCode(c *gin.Context) {
 	if code == "" {
 		ret := entity.SetResult(4001, "code不能为空", "")
 		c.JSON(http.StatusOK, ret)
-	}else{
+	} else {
 		retCode, data, serviceEro := service.SelectCodeService(code)
 		ret := entity.SetResult(retCode, serviceEro, data)
 		c.JSON(http.StatusOK, ret)
