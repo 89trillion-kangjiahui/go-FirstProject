@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/golang/protobuf/proto"
+
 	"project3/dao"
 	"project3/entity"
 	"project3/response"
 	"project3/util"
-
-	"github.com/golang/protobuf/proto"
 )
 
 func CheckCodeService(uid, code string) []byte {

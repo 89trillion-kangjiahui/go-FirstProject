@@ -3,10 +3,10 @@ package dao
 import (
 	"context"
 
+	"go.mongodb.org/mongo-driver/bson"
+
 	"project3/entity"
 	"project3/util"
-
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func SelectByUid(uid string) (*entity.User, error) {

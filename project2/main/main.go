@@ -1,9 +1,9 @@
 package main
 
 import (
-	"project2/controller"
-
 	"github.com/gin-gonic/gin"
+
+	"project2/controller"
 )
 
 const url = "/cal/getRet"

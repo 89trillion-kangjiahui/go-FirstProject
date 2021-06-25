@@ -1,11 +1,11 @@
 package controller
 
 import (
-	. "project1/entity"
-	"project1/service"
-
 	"github.com/gin-gonic/gin"
 	"net/http"
+
+	. "project1/entity"
+	"project1/service"
 )
 
 func GetAllByRarity(r *gin.Engine, url string, soldierMap map[string]SoldierDTO) {

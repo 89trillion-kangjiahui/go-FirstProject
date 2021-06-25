@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"project3/entity"
-	"project3/service"
-
 	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"project3/entity"
+	"project3/service"
 )
 
 func UserCheckCode(r *gin.Engine, url string) {

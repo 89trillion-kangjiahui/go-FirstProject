@@ -1,9 +1,9 @@
 package main
 
 import (
-	"project3/controller"
-
 	"github.com/gin-gonic/gin"
+
+	"project3/controller"
 )
 
 const (

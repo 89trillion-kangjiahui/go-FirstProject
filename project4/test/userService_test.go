@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"project3/response"
-
 	"github.com/golang/protobuf/proto"
+
+	"project3/response"
 )
 
 //测试proto编解码是否正确

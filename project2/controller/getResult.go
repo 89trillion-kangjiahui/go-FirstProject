@@ -3,11 +3,11 @@ package controller
 import (
 	"strings"
 
-	"project2/dto"
-	"project2/util"
-
 	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"project2/dto"
+	"project2/util"
 )
 
 func ComputeRet(r *gin.Engine, url string) {

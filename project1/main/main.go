@@ -1,12 +1,12 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
+	"github.com/robfig/config"
+
 	"project1/controller"
 	"project1/entity"
 	"project1/util"
-
-	"github.com/gin-gonic/gin"
-	"github.com/robfig/config"
 )
 
 var SoldierMap = make(map[string]entity.Soldier)
