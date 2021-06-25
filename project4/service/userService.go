@@ -108,7 +108,7 @@ func CheckCodeService(uid, code string) []byte {
 func giftSetRedis(code string, ret entity.GiftContent, user entity.User) []byte {
 	value, jsonEro := json.Marshal(&ret)
 	if jsonEro != nil {
-		jsonRes := setResponse(40100, "json序列化失败", ret.GiftList, user.GemBalance, user.GoldBalance)
+		jsonRes := setResponse(50001, "json序列化失败", ret.GiftList, user.GemBalance, user.GoldBalance)
 		data, _ := proto.Marshal(jsonRes)
 		return data
 	}
@@ -118,7 +118,7 @@ func giftSetRedis(code string, ret entity.GiftContent, user entity.User) []byte 
 		data, _ := proto.Marshal(redisRes)
 		return data
 	}
-	res := setResponse(200, "获得奖励", ret.GiftList, user.GemBalance, user.GoldBalance)
+	res := setResponse(200, "请求成功", ret.GiftList, user.GemBalance, user.GoldBalance)
 	data, _ := proto.Marshal(res)
 	return data
 }
@@ -130,9 +130,6 @@ func UserLoginService(id string) *entity.User {
 
 func UserRegisterService(userName string) (int, string, string) {
 	uid := util.UniqueId()
-	if userName == "" {
-		return 20001, "用户名为空", ""
-	}
 	user := entity.User{
 		Uid:      uid,
 		UserName: userName,

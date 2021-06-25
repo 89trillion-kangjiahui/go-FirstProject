@@ -31,11 +31,11 @@ func CreateCodeService(codeType, describe, usefulDate string, receiveNum int, je
 	}
 	value, jsonEro := json.Marshal(prize)
 	if jsonEro != nil {
-		return 40001, "json序列化失败", ""
+		return 50001, "json序列化失败", ""
 	}
 	redisEro := util.SetRedis(key, value)
 	if redisEro != nil {
-		return 50001, "redis服务错误", ""
+		return 50002, "redis服务错误", ""
 	}
 	return 200, "请求成功", key
 }
@@ -43,7 +43,7 @@ func CreateCodeService(codeType, describe, usefulDate string, receiveNum int, je
 func SelectCodeService(code string) (int, string, GiftContent) {
 	value, jsonEro := util.GetRedis(code)
 	if jsonEro != nil {
-		return 40001, "json序列化失败", GiftContent{}
+		return 50001, "json序列化失败", GiftContent{}
 	}
 	jsonString := []byte(value)
 	var ret GiftContent
