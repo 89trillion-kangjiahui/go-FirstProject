@@ -1,15 +1,7 @@
 package main
 
-import (
-	"github.com/gin-gonic/gin"
-
-	"project2/controller"
-)
-
-const url = "/cal/getRet"
+import "project2/route"
 
 func main() {
-	r := gin.Default()
-	controller.ComputeRet(r, url)
-	r.Run(":8000")
+	route.RegisterRoutes().Run(":8080")
 }
