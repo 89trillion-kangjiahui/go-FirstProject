@@ -41,10 +41,9 @@ func MixToPost(exp string) []string {
 	expLen := len(exp)
 	for i := 0; i < expLen; i++ {
 		char := string(exp[i])
-		switch char {
-		case " ":
+		if char == ""{
 			continue
-		case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
+		}else if unicode.IsDigit(rune(exp[i])){
 			j := i
 			digit := ""
 			for ; j < expLen && unicode.IsDigit(rune(exp[j])); j++ {
@@ -52,7 +51,7 @@ func MixToPost(exp string) []string {
 			}
 			prefix = append(prefix, digit)
 			i = j - 1
-		default:
+		}else{
 			for !curStack.IsEmpty() {
 				top := curStack.Top()
 				if isMore(top, char) {
