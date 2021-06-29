@@ -49,202 +49,100 @@ fyne页面渲染层|view|将用户输入的内容，重新渲染到页面
 全局变量层|global|项目中的全局变量
 
 # 存储设计
-### 返回结果封装为Result结构：状态码，信息，数据
+### 用户输入的数据封装为proto结构。格式为：
 内容|field|类型
 ------------ | ------------- | ------------- 
-状态码|Code|int
-信息|Msg|string
-数据|Data|interface{}
-
-### 错误码和信息
-错误码|信息
------------- | -------------
-200|"请求成功"
-3000|"rarity不能为空"
-3001|"unlockArena不能为空"
-3002|"cvc不能为空"
-3003|"id不能为空"
-4001|"数据库为空"
-4002|"该用户不存在"
+用户ip地址|Ip|string
+用户消息类型|Type|string
+消息用户的来源|From|string
+用户输入的内容|Content|string
+用户名字|User|string
+用户在线列表|Userlist|[]string
 
 
 # 接口设计
-# 需求1：输入稀有度，当前解锁阶段和cvc，获取该稀有度cvc合法且已解锁的所有士兵
-### http请求方法：
-http  GET
-### 接口地址：
-localhost:8000/soldier/getAll
-### 请求参数：
-参数名|参数类型|注释|是否必填
+### 1.用户发起连接请求，建立连接
+### websocket接口地址
+ws://localhost:8080/ws
+
+### 发送登录消息
+field|注释|类型|内容
 ------------ | ------------- | ------------- | -------------
-rarity|string|稀有度|必填
-unlockArena|string|解锁阶段|必填
-cvc|string|版本|必填
+Type|用户消息的类型|string|"login"
+Content|用户输入的内容|string|用户的名字
 
-### 请求响应：
-响应结果为json数据，数据格式如下：
-
-参数名|参数类型|注释
------------- | ------------- | -------------
-Code|int|状态码
-Msg|string|信息
-Data|interface{}|interface{}数据
-
-json格式如下：
-```java
-{
-	"code":200,
-	"Msg":"找到符合信息的士兵",
-	"Data": [
-			{
-				"id":"10102",        //士兵id
-				"Name":"Swordsman",  //士兵名字
-				"UnlockArena":"0",   //解锁阶段
-				"Rarity":"1",        //稀有度
-				"Atk":"140"          //战斗力
-				"cvc":"1000"
-			}
-		]
-}
-```
-
-# 需求2：输入士兵id获取稀有度
-### http请求方法：
-http  GET
-### 接口地址：
-localhost:8000/soldier/getRarity 
-### 请求参数：
-参数名|参数类型|注释|是否必填
+### 发送获取用户列表消息
+field|注释|类型|内容
 ------------ | ------------- | ------------- | -------------
-id|string|士兵id|必填
-### 请求响应：
-响应结果为json数据，数据格式如下：
+Type|用户消息的类型|string|"user_list"
 
-参数名|参数类型|注释
+### 返回消息
+field|注释|类型
 ------------ | ------------- | -------------
-Code|int|状态码
-Msg|string|信息
-Data|interface{}|interface{}数据
+Ip|用户Ip地址|string
+Content|用户输入的内容|string
+Type|用户消息的类型|string
+From|哪个用户说的话|string
+Userlist|用户列表|[]string
 
-json格式如下：
-```java
-{
-	"code":200,
-	"Msg":"找到了该士兵的稀有度",
-	"Data": 2
-}
-```
 
-# 需求3：输入士兵id获取战斗力
-### http请求方法：
-http  GET
-### 接口地址：
-localhost:8000/soldier/getAtk
-### 请求参数：
-参数名|参数类型|注释|是否必填
+### 2.用户发起断开连接请求，断开连接
+### websocket接口地址
+ws://localhost:8080/ws
+
+### 发送登录消息
+field|注释|类型|内容
 ------------ | ------------- | ------------- | -------------
-id|string|士兵id|必填
-### 请求响应：
-响应结果为json数据，数据格式如下：
+Type|用户消息的类型|string|"exit"
 
-参数名|参数类型|注释
------------- | ------------- | -------------
-Code|int|状态码
-Msg|string|信息
-Data|interface{}|interface{}数据
-
-json格式如下：
-```java
-{
-	"code":200,
-	"Msg":"找到符合信息的士兵",
-	"Data": 3
-}
-```
-
-
-# 需求4：输入cvc获取所有合法的士兵 
-### http请求方法：
-http  GET
-### 接口地址：
-localhost:8000/soldier/getByCvc
-### 请求参数：
-参数名|参数类型|注释|是否必填
+### 发送获取用户列表消息
+field|注释|类型|内容
 ------------ | ------------- | ------------- | -------------
-cvc|string|版本号|必填
-### 请求响应：
-响应结果为json数据，数据格式如下：
+Type|用户消息的类型|string|"user_list"
 
-参数名|参数类型|注释
+### 返回消息
+field|注释|类型
 ------------ | ------------- | -------------
-Code|int|状态码
-Msg|string|信息
-Data|interface{}|interface{}数据
+Ip|用户Ip地址|string
+Content|用户输入的内容|string
+Type|用户消息的类型|string
+From|哪个用户说的话|string
+Userlist|用户列表|[]string
 
-json格式如下：
-```java
-{
-	"code":200,
-	"msg":"请求成功",
-	"data":[{
-		"id":"17806",
-		"Name":"Crossbowmen",
-		"UnlockArena":"6",
-		"Rarity":"3",
-		"Atk":"269",
-		"Cvc":"1000"
-		},]
-}
-```
+### 3.用户发送talk类型消息，发送用户用户输入的内容
+### websocket接口地址
+ws://localhost:8080/ws
 
-# 需求5：获取每个阶段解锁相应士兵的json数据
-### http请求方法：
-http  GET
-### 接口地址：
-localhost:8000/soldier/getAll/unlockArena
-### 请求参数：无
-### 请求响应：
-响应结果为json数据，数据格式如下：
+### 发送登录消息
+field|注释|类型|内容
+------------ | ------------- | ------------- | -------------
+Type|用户消息的类型|string|"talk"
+Content|用户输入的内容|string|用户输入的内容
 
-参数名|参数类型|注释
+### 返回消息
+field|注释|类型
 ------------ | ------------- | -------------
-Code|int|状态码
-Msg|string|信息
-Data|interface{}|interface{}数据
-
-json格式如下：
-```java
-{
-	"code":200,
-	"Msg":"找到符合信息的士兵",
-	"Data": [
-			0:{
-			   {
-			       "id":"10102",        //士兵id
-			       "Name":"Swordsman",  //士兵名字
-			       "UnlockArena":"0",   //解锁阶段
-			       "Rarity":"1",        //稀有度
-			       "Atk":"140"          //战斗力
-			       "cvc":"1000"
-			    }
-			}
-		]
-}
-```
+Ip|用户Ip地址|string
+Content|用户输入的内容|string
+Type|用户消息的类型|string
+From|哪个用户说的话|string
+Userlist|用户列表|[]string
 
 # 第三方库
-### gin
+### websocket
 ```text
-github.com/gin-gonic/gin
-使用gin框架获取http请求以及返回http响应
+github.com/gorilla/websocket
+使用websocket框架处理用户聊天信息
 ```
-### config
+
+### proto
 ```text
-github.com/robfig/config
-使用这个第三方包解析app.ini配置文件
+github.com/golang/protobuf
+使用此包处理protobuf格式消息的解析
 ```
-### pflag
+
+### fyne
 ```text
-github.com/spf13/pflag
-使用这个第三方包解析命令行参数
+fyne.io/fyne
+使用此包制作客户端页面
 ```
