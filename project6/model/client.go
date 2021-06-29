@@ -1,12 +1,7 @@
 package model
 
 import (
-	"fmt"
-
-	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
-
-	"project6/response"
 )
 
 type Client struct {
@@ -28,9 +23,6 @@ func (this *Client) Read() {
 	}()
 	for {
 		_, data, err := this.Ws.ReadMessage()
-		var ret response.Data
-		proto.Unmarshal(data, &ret)
-		fmt.Println(ret)
 		if err != nil {
 			break
 		}
