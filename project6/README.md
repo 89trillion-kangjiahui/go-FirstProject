@@ -1,68 +1,52 @@
 # 整体框架
 ```text
-1. app.ini配置文件解析,通过第三方go包github.com/robfig/config读取.int配置文件，使用的函数如下：
-	c, _ := config.ReadDefault("./config/app.ini").  //读取配置文件
-	httpPort, _ := c.String("server", "HttpPort")  //获取server标签下的HttpPort字段值
-2. 读取命令行参数，获得json文件的路径：
-	var CliJsonPath = flag.StringP("json-path", "p", "./config/config.army.model.json", "Input Json Path")
-	func GetJsonPath() string {
-		// 设置标准化参数名称的函数
-		flag.CommandLine.SetNormalizeFunc(wordSepNormalizeFunc)
-		flag.Parse()
-		return *CliJsonPath
-	}
-3. 项目整体流程实现：
-   首先通过解析app.ini配置文件获取端口号。
-   通过读取命令行输入的参数，获取json文件的路径。
-   更具路径找到json文件并解析，将其转储为新定义的结构体的json文件
-   获取路由，调用controller层，处理http请求并返回参数
-4. 项目整体流程图如下图所示：
+功能：用fyne开发聊天客户端，连接第5题的聊天服务。
+1）连接管理：连接、断开、展示连接状态（连接、断开）
+2）展示用户列表
+3）发送消息
+4）展示收到的消息
+整体流程：
+项目启动，用户输入用户名，点击连接按钮，启动websocket连接服务器请求。
+启动用户的读，写协程。
+用户的读协程：不断的读取服务端发送来的消息放入读取通道。
+用户的写协程：不断的读取客户端发送的消息，发送给服务端。
+fyne中开启刷新页面的协程，不断的从读取通道中读取数据：
+	1.当消息类型为“login”，将用户ip，广播内容重新渲染到页面。
+	2.当消息类型为“user_list”,将用户列表重新渲染到页面。
+	3.当消息类型为“talk”，将用户输入的内容重新渲染到页面上。
+	4.当消息类型为“exit”，将用户ip重新设为空，用户列表清空。
 ```
 ![流程图](./doc/img.jpg)
 
 # 目录结构
 ```text
 .
-├── config
-│   ├── app.ini                  //app.ini配置文件
-│   ├── config.army.model.json   //json文件
-│   └── new.soldier.dto.json     //新的结构体转储的json文件
-├── controller
-│   └── soldierController.go     //处理http请求和响应
-├── doc
-│   └── img.jpg                  //题目1的流程图
-├── entity
-│   ├── Result.go                //响应数据的格式
-│   ├── Soldier.go               //老json文件的士兵
-│   └── SoldierDTO.go            //新json文件的士兵
-├── go.mod
-├── load
-│   ├── project1_test.py         //压力测试代码
-│   └── report1.html             //压力测试报告
-├── main
-│   └── main.go                  //项目启动
+├── general.proto            //消息内容的proto文件
 ├── global
-│   └── globalVar.go             //全局变量
-├── route
-│   └── route.go                 //路由管理
+│   └── globalVar.go         //全局变量文件
+├── go.mod
+├── main
+│   └── main.go              //项目启动文件
+├── model
+│   └── client.go            //客户端管理
+├── response
+│   └── general.pb.go        //消息内容的proto的go文件
 ├── service
-│   └── soldierService.go        //处理获取士兵信息的逻辑
+│   └── clientService.go。   //客户端服务层
 ├── test
-│   └── soldierService_test.go   //单元测试
-└── util
-    ├── getCommand.go            //解析命令行
-    └── jsonToFile.go            //解析json文件并转储为新结构体的json文件
+│   └── project6_test.go     //单元测试
+└── view
+    └── myApp.go             //设计页面，渲染页面
 ```
 # 代码逻辑分层
 层|文件夹|主要职责
 ------------ | ------------- | ------------- 
-应用层|controller|负责接收请求和返回响应
-服务层|service|负责处理获取士兵信息的逻辑
-实体层|entity|封装实体结构体
-单元测试层|test|测试计算器是否功能正常
-工具层|util|解析命令行，转储json文件
+服务层|service|负责处理客户端发送消息的逻辑
+实体层|model|封装客户端的读写协程代码
+单元测试层|test|测试是否能连接到服务端
 启动层|main|启动项目，调用应用层处理http请求
-压力测试层|load|测试项目的压力
+fyne页面渲染层|view|将用户输入的内容，重新渲染到页面
+全局变量层|global|项目中的全局变量
 
 # 存储设计
 ### 返回结果封装为Result结构：状态码，信息，数据
