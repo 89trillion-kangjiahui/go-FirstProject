@@ -1,14 +1,14 @@
 package controller
 
 import (
-	"project2/util"
+	"net/http"
 	"strings"
 	"unicode"
 
 	"github.com/gin-gonic/gin"
-	"net/http"
 
 	"project2/dto"
+	"project2/util"
 )
 
 func ComputeRet(c *gin.Context) {
@@ -19,10 +19,10 @@ func ComputeRet(c *gin.Context) {
 	if exp == "" {
 		ret := dto.SetResult(4001, 0, "你输入的表达式为空")
 		c.JSON(http.StatusOK, ret)
-	}else if !StringTrue(exp) {
+	} else if !StringTrue(exp) {
 		ret := dto.SetResult(4002, 0, "你输入的表达式算数表达式不正确")
 		c.JSON(http.StatusOK, ret)
-	}else {
+	} else {
 		solution := util.GetResult(util.MixToPost(exp))
 		//封装结果
 		Ret := dto.SetResult(200, solution, "计算成功")
@@ -33,7 +33,7 @@ func ComputeRet(c *gin.Context) {
 // 判断算数表达式是否正确
 func StringTrue(exp string) bool {
 	//如果算数表达式的第一个位置的元素不是数字或者最后一个位置的元素不是数字返回false
-	if!unicode.IsDigit(rune(exp[0])) || !unicode.IsDigit(rune(exp[len(exp)-1])) {
+	if !unicode.IsDigit(rune(exp[0])) || !unicode.IsDigit(rune(exp[len(exp)-1])) {
 		return false
 	}
 	flag := false
